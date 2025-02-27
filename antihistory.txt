@@ -1,0 +1,1 @@
+javascript:(function()%7Blet%20url%3Dprompt(%22Enter%20URL%20to%20open%20without%20adding%20to%20history%3A%22)%2Cw%3Dwindow.open()%3Bconsole.log(w)%2Cw.document.body.innerHTML%3D%60%3Ciframe%20src%3D%22%24%7Burl%7D%22%20style%3D%22width%3A100%25%3Bheight%3A100%25%3B%22%3E%3C%2Fiframe%3E%60%7D)()
