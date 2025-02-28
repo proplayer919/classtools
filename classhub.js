@@ -69,7 +69,7 @@
       font-family: Arial, sans-serif;
       background-color: var(--window-bg);
       border: 1px solid var(--border-color);
-      z-index: 999999999999999999999999999999999999999999999999999999999999999999999999;
+      z-index: 2147483647;
     }
     .console-header {
       background-color: var(--header-bg);
