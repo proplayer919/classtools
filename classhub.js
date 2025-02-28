@@ -154,6 +154,9 @@
       bottom: 0;
       cursor: se-resize;
     }
+    .category h3 {
+      color: var(--button-text);
+    }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
     .settings label { color: var(--button-text); }
