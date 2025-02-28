@@ -1,4 +1,4 @@
-// Disco Mode
+// Disco Mode (Epilepsy Warning)
 (function () {
   var discoInterval = null;
   var colors = ["red", "orange", "yellow", "green", "blue", "purple", "pink"];
