@@ -1,10 +1,10 @@
 [
   {
     "name": "Transum Autocomplete",
-    "link": "transum.txt"
+    "link": "plugins/transum.js"
   },
   {
     "name": "Cloaked Open",
-    "link": "antihistory.txt"
+    "link": "plugins/antihistory.js"
   }
 ]
