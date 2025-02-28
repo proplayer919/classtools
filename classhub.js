@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const version = "1.1";
+  const version = "1.2";
 
   // --- Theme Management & CSS Setup ---
   const themeColors = {
@@ -754,27 +754,49 @@
       );
       if (!linksResponse.ok) throw new Error("Failed to load plugins list");
       const linksData = await linksResponse.json();
-      const links = linksData.filter((entry) => entry.name.endsWith(".js"));
-      for (const entry of links) {
-        const urlResponse = await fetch(
-          `https://raw.githubusercontent.com/proplayer919/classtools/main/plugins/${entry.name}`
+      const categories = linksData.filter(
+        (entry) => entry.type === "dir"
+      );
+      for (const category of categories) {
+        const categoryLinksResponse = await fetch(
+          `https://api.github.com/repos/proplayer919/classtools/contents/plugins/${category.name}`
         );
-        if (!urlResponse.ok)
-          throw new Error(`Failed to load ${entry.name}`);
-        const scriptCode = await urlResponse.text();
-        const lines = scriptCode.split("\n");
-        const name = lines[0].replace("//", "").trim();
-        const btn = document.createElement("button");
-        btn.innerText = name;
-        // Using new Function instead of eval (note: consider a sandbox for production)
-        btn.addEventListener("click", () => {
-          try {
-            new Function(scriptCode)();
-          } catch (error) {
-            consolePrint("Error executing plugin: " + error.message);
-          }
-        });
-        pluginLinksContainer.appendChild(btn);
+        if (!categoryLinksResponse.ok)
+          throw new Error(`Failed to load ${category.name}`);
+        const categoryLinksData = await categoryLinksResponse.json();
+        const categoryLinks = categoryLinksData.filter(
+          (entry) => entry.name.endsWith(".js")
+        );
+        const categoryDiv = document.createElement("div");
+        categoryDiv.className = "category";
+        const categoryName = document.createElement("h3");
+        categoryName.innerText = category.name;
+        categoryDiv.appendChild(categoryName);
+        const categoryLinksContainer = document.createElement("div");
+        categoryLinksContainer.className = "category-links";
+        for (const entry of categoryLinks) {
+          const urlResponse = await fetch(
+            `https://raw.githubusercontent.com/proplayer919/classtools/main/plugins/${category.name}/${entry.name}`
+          );
+          if (!urlResponse.ok)
+            throw new Error(`Failed to load ${entry.name}`);
+          const scriptCode = await urlResponse.text();
+          const lines = scriptCode.split("\n");
+          const name = lines[0].replace("//", "").trim();
+          const btn = document.createElement("button");
+          btn.innerText = name;
+          // Using new Function instead of eval (note: consider a sandbox for production)
+          btn.addEventListener("click", () => {
+            try {
+              new Function(scriptCode)();
+            } catch (error) {
+              consolePrint("Error executing plugin: " + error.message);
+            }
+          });
+          categoryLinksContainer.appendChild(btn);
+        }
+        categoryDiv.appendChild(categoryLinksContainer);
+        pluginLinksContainer.appendChild(categoryDiv);
       }
     } catch (error) {
       console.error(error);
