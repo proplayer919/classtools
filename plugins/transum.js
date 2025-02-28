@@ -1,3 +1,4 @@
+// Transum Autocomplete
 document.querySelectorAll("#MainTablep").forEach(function (element) {
   const match = (element.textContent || "").match(/(-?\d*\.?\d+)\s*([+\-×÷])\s*(-?\d*\.?\d+)/);
 

@@ -749,19 +749,22 @@
   async function loadPluginLinks() {
     try {
       const linksResponse = await fetch(
-        "https://raw.githubusercontent.com/proplayer919/classtools/main/links.json"
+        "https://api.github.com/repos/proplayer919/classtools/contents/plugins"
       );
-      if (!linksResponse.ok) throw new Error("Failed to load links.json");
+      if (!linksResponse.ok) throw new Error("Failed to load plugins list");
       const linksData = await linksResponse.json();
-      for (const entry of linksData) {
+      const links = linksData.filter((entry) => entry.name.endsWith(".js"));
+      for (const entry of links) {
         const urlResponse = await fetch(
-          `https://raw.githubusercontent.com/proplayer919/classtools/main/${entry.link}`
+          `https://raw.githubusercontent.com/proplayer919/classtools/main/plugins/${entry.name}`
         );
         if (!urlResponse.ok)
-          throw new Error(`Failed to load ${entry.link}`);
+          throw new Error(`Failed to load ${entry.name}`);
         const scriptCode = await urlResponse.text();
+        const lines = scriptCode.split("\n");
+        const name = lines[0].replace("//", "").trim();
         const btn = document.createElement("button");
-        btn.innerText = entry.name;
+        btn.innerText = name;
         // Using new Function instead of eval (note: consider a sandbox for production)
         btn.addEventListener("click", () => {
           try {
@@ -775,7 +778,7 @@
     } catch (error) {
       console.error(error);
       const errorMsg = document.createElement("div");
-      errorMsg.innerText = "Error loading links.";
+      errorMsg.innerText = "Error loading plugins.";
       pluginLinksContainer.appendChild(errorMsg);
     }
   }

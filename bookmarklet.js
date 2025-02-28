@@ -1,1 +1,0 @@
-javascript:(function(){const response=fetch("https://raw.githubusercontent.com/proplayer919/classtools/main/classhub.js").then(res=>{if(!res.ok)throw new Error("Failed to load classhub.js");return res.text();});response.then(scriptContent=>{const script=document.createElement("script");script.textContent=scriptContent;document.body.appendChild(script);})})();
