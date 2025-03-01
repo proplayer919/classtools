@@ -415,10 +415,8 @@
       .then((messages) => {
         chatMessages.innerHTML = "";
         messages.forEach((message) => {
+          message = JSON.parse(message)
           const messageElem = document.createElement("div");
-          if (message.system) {
-            messageElem.style.color = "red";
-          }
           messageElem.innerHTML =
             "<strong>" + message.username + ":</strong> " + message.message;
           chatMessages.appendChild(messageElem);
