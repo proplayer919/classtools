@@ -111,6 +111,9 @@ async def run(
     server_address = ("", port)
     httpd = server_class(server_address, handler_class)
     print(f"Starting http server on port {port}")
+    message_history.append(
+        {"username": "System", "message": "::banner{Server has been started/restarted. All previous messages have been cleared.}"}
+    )
     httpd.serve_forever()
 
 
