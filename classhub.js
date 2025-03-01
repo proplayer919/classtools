@@ -411,7 +411,6 @@
         chatMessages.innerHTML = "";
         if (messages === cachedMessages) return;
         messages.forEach((message) => {
-          message = JSON.parse(message)
           const messageElem = document.createElement("div");
           messageElem.style.color = currentTheme.buttonText;
           const usernameElem = document.createElement("strong");
@@ -431,7 +430,7 @@
         errorMsg.innerText = "Error fetching chat history: " + error;
         chatMessages.appendChild(errorMsg);
       });
-    
+
     // Check how many people are online
     fetch(chatAPI + "online", {
       method: "GET",
