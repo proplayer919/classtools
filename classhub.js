@@ -290,6 +290,7 @@
   // Online user count
   const onlineUserCount = document.createElement("div");
   onlineUserCount.style.backgroundColor = "var(--content-bg)";
+  onlineUserCount.style.color = "var(--button-text)";
   onlineUserCount.style.border = "1px solid var(--border-color)";
   onlineUserCount.style.padding = "4px";
   onlineUserCount.style.marginBottom = "8px";
