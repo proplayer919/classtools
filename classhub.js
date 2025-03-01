@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const version = "1.2";
+  const version = "1.3";
 
   // --- Theme Management & CSS Setup ---
   const themeColors = {
@@ -233,7 +233,7 @@
   tabBar.classList.add("tab-bar");
   tabBar.setAttribute("role", "tablist");
 
-  const tabs = ["Console", "Plugins", "Settings"];
+  const tabs = ["Console", "Plugins", "Chat", "Settings"];
   const tabButtons = {};
   tabs.forEach((tabName) => {
     const btn = document.createElement("button");
@@ -281,6 +281,47 @@
   pluginLinksContainer.style.gap = "8px";
   tabPlugins.appendChild(pluginLinksContainer);
 
+  // --- Tab: Chat ---
+  const tabChat = document.createElement("div");
+  tabChat.id = "tabChat";
+  tabChat.classList.add("tab-pane");
+  tabChat.style.padding = "8px";
+
+  // Chat messages container
+  const chatMessages = document.createElement("div");
+  chatMessages.style.height = "350px";
+  chatMessages.style.overflowY = "auto";
+  chatMessages.style.backgroundColor = "var(--content-bg)";
+  chatMessages.style.border = "1px solid var(--border-color)";
+  chatMessages.style.padding = "4px";
+  chatMessages.style.marginBottom = "8px";
+  tabChat.appendChild(chatMessages);
+
+  // Username and message input container
+  const chatForm = document.createElement("div");
+  chatForm.style.display = "flex";
+  chatForm.style.gap = "4px";
+
+  // Username input
+  const usernameInput = document.createElement("input");
+  usernameInput.type = "text";
+  usernameInput.placeholder = "Username";
+  usernameInput.style.flex = "1";
+
+  // Message input
+  const messageInput = document.createElement("input");
+  messageInput.type = "text";
+  messageInput.placeholder = "Type your message...";
+  messageInput.style.flex = "3";
+
+  // Send button
+  const sendButton = document.createElement("button");
+  sendButton.innerText = "Send";
+  chatForm.appendChild(usernameInput);
+  chatForm.appendChild(messageInput);
+  chatForm.appendChild(sendButton);
+  tabChat.appendChild(chatForm);
+
   // --- Tab: Settings ---
   const tabSettings = document.createElement("div");
   tabSettings.id = "tabSettings";
@@ -317,6 +358,7 @@
   // --- Assemble Tabs ---
   tabContentContainer.appendChild(tabConsole);
   tabContentContainer.appendChild(tabPlugins);
+  tabContentContainer.appendChild(tabChat);
   tabContentContainer.appendChild(tabSettings);
 
   consoleContainer.appendChild(tabBar);
@@ -333,10 +375,11 @@
 
   // --- Tab Switching ---
   function switchTab(tabName) {
-    [tabConsole, tabPlugins, tabSettings].forEach((tab) =>
+    [tabConsole, tabChat, tabPlugins, tabSettings].forEach((tab) =>
       tab.classList.remove("active")
     );
     if (tabName === "console") tabConsole.classList.add("active");
+    else if (tabName === "chat") tabChat.classList.add("active");
     else if (tabName === "plugins") tabPlugins.classList.add("active");
     else if (tabName === "settings") tabSettings.classList.add("active");
 
@@ -866,3 +909,61 @@
     document.title = "Nice try!";
   }
 })();
+
+// --- Websocket Chat Functionality ---
+let chatSocket = new WebSocket("ws://classtools.proplayer919.dev:8765");
+
+// When the websocket opens, show a connection message
+chatSocket.onopen = function () {
+  const statusMsg = document.createElement("div");
+  statusMsg.style.color = "green";
+  statusMsg.innerText = "Connected to chat server.";
+  chatMessages.appendChild(statusMsg);
+};
+
+// Handle incoming messages and append to chatMessages
+chatSocket.onmessage = function (event) {
+  try {
+    const data = JSON.parse(event.data);
+
+    const messageElem = document.createElement("div");
+    if (data.system) {
+      messageElem.style.color = "red";
+      if (data.message === "Chat history cleared.") {
+        chatMessages.innerHTML = "";
+      }
+    }
+    messageElem.innerHTML =
+      "<strong>" + data.username + ":</strong> " + data.message;
+    chatMessages.appendChild(messageElem);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  } catch (e) {
+    console.error("Error parsing message:", e);
+  }
+};
+
+// Show error if connection fails
+chatSocket.onerror = function (error) {
+  const errorMsg = document.createElement("div");
+  errorMsg.style.color = "red";
+  errorMsg.innerText = "WebSocket error: " + error;
+  chatMessages.appendChild(errorMsg);
+};
+
+// Send message on button click or Enter key in messageInput
+function sendChatMessage() {
+  const username = usernameInput.value.trim() || "Anonymous";
+  const message = messageInput.value.trim();
+  if (message === "") return;
+  const payload = JSON.stringify({ username, message });
+  if (chatSocket.readyState === WebSocket.OPEN) {
+    chatSocket.send(payload);
+  }
+  messageInput.value = "";
+}
+sendButton.addEventListener("click", sendChatMessage);
+messageInput.addEventListener("keypress", function (e) {
+  if (e.key === "Enter") {
+    sendChatMessage();
+  }
+});
