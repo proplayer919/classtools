@@ -148,6 +148,15 @@
     .category h3 {
       color: var(--button-text);
     }
+    .banner {
+      background-color:rgb(29, 29, 29);
+      padding: 10px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      border: 2px solid #000;
+      margin: 10px 0;
+      }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
     .settings label { color: var(--button-text); }
@@ -413,12 +422,22 @@
         messages.forEach((message) => {
           const messageElem = document.createElement("div");
           messageElem.style.color = currentTheme.buttonText;
-          const usernameElem = document.createElement("strong");
-          usernameElem.innerText = message.username + ": ";
-          messageElem.appendChild(usernameElem);
-          const messageTextElem = document.createElement("span");
-          messageTextElem.innerText = message.message;
-          messageElem.appendChild(messageTextElem);
+          const messageText = message.message;
+          if (messageText.startsWith("::banner{") && messageText.endsWith("}")) {
+            const bannerText = messageText.slice(9, -1);
+            const bannerElem = document.createElement("div");
+            bannerElem.style.background = currentTheme.buttonHoverBg;
+            bannerElem.style.padding = "8px";
+            bannerElem.style.borderRadius = "8px";
+            bannerElem.style.margin = "8px 0";
+            bannerElem.innerText = bannerText;
+            messageElem.appendChild(bannerElem);
+          } else {
+            const usernameElem = document.createElement("strong");
+            usernameElem.innerText = message.username + ": ";
+            messageElem.appendChild(usernameElem);
+            messageElem.appendChild(document.createTextNode(messageText));
+          }
           chatMessages.appendChild(messageElem);
         });
         chatMessages.scrollTop = chatMessages.scrollHeight;
