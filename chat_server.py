@@ -61,7 +61,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             online_users.update(active_users)
 
             self._set_response()
-            self.wfile.write(json.dumps(list(online_users.keys())).encode("utf-8"))
+            self.wfile.write(json.dumps({"online": len(online_users)}).encode("utf-8"))
 
         else:
             self._set_response(404)
