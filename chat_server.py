@@ -61,10 +61,10 @@ async def main():
     server = await websockets.serve(
         handler,
         "0.0.0.0",
-        8765,
+        8080,
         process_request=process_request,  # Use our custom request processor
     )
-    print("Chat server started on ws://localhost:8765")
+    print("Chat server started on ws://localhost:8080")
     asyncio.create_task(clear_history_periodically())
     await server.wait_closed()
 
