@@ -402,6 +402,7 @@
 
   // --- Chat Functionality ---
   let chatAPI = 'https://classtools.proplayer919.dev/';
+  let cachedMessages = [];
 
   // Make a request to the server every second
   setInterval(() => {
@@ -414,6 +415,7 @@
       .then((response) => response.json())
       .then((messages) => {
         chatMessages.innerHTML = "";
+        if (messages === cachedMessages) return;
         messages.forEach((message) => {
           message = JSON.parse(message)
           const messageElem = document.createElement("div");
@@ -423,6 +425,7 @@
           chatMessages.appendChild(messageElem);
         });
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        cachedMessages = messages;
       })
       .catch((error) => {
         const errorMsg = document.createElement("div");
