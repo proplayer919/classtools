@@ -145,15 +145,6 @@
       background-color: var(--input-bg);
       color: var(--input-text);
     }
-    .resizer {
-      width: 16px;
-      height: 16px;
-      background: transparent;
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      cursor: se-resize;
-    }
     .category h3 {
       color: var(--button-text);
     }
@@ -365,11 +356,6 @@
   consoleContainer.appendChild(tabContentContainer);
   consoleWindow.appendChild(header);
   consoleWindow.appendChild(consoleContainer);
-
-  // --- Resizer Element ---
-  const resizer = document.createElement("div");
-  resizer.classList.add("resizer");
-  consoleWindow.appendChild(resizer);
 
   document.body.appendChild(consoleWindow);
 
@@ -772,15 +758,6 @@
   document.addEventListener("touchend", function () {
     isDragging = false;
   });
-  function onResizerMouseDown(e) {
-    isResizing = true;
-    resizeStartWidth = consoleWindow.offsetWidth;
-    resizeStartHeight = consoleWindow.offsetHeight;
-    resizeStartX = e.clientX;
-    resizeStartY = e.clientY;
-    e.preventDefault();
-  }
-  resizer.addEventListener("mousedown", onResizerMouseDown);
   document.addEventListener("mousemove", onResizeMouseMove);
   document.addEventListener("mouseup", onResizeMouseUp);
 
@@ -945,7 +922,6 @@
     document.removeEventListener("touchend", function () {
       isDragging = false;
     });
-    resizer.removeEventListener("mousedown", onResizerMouseDown);
     document.removeEventListener("mousemove", onResizeMouseMove);
     document.removeEventListener("mouseup", onResizeMouseUp);
     header.removeEventListener("keydown", onHeaderKeyDown);
