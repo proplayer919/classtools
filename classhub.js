@@ -420,8 +420,12 @@
           message = JSON.parse(message)
           const messageElem = document.createElement("div");
           messageElem.style.color = currentTheme.buttonText;
-          messageElem.innerHTML =
-            "<strong>" + message.username + ":</strong> " + message.message;
+          const usernameElem = document.createElement("strong");
+          usernameElem.innerText = message.username + ": ";
+          messageElem.appendChild(usernameElem);
+          const messageTextElem = document.createElement("span");
+          messageTextElem.innerText = message.message;
+          messageElem.appendChild(messageTextElem);
           chatMessages.appendChild(messageElem);
         });
         chatMessages.scrollTop = chatMessages.scrollHeight;
