@@ -20,6 +20,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def _set_response(self, status_code=200):
         self.send_response(status_code)
         self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
 
     def do_GET(self):
@@ -44,6 +45,13 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         except json.JSONDecodeError:
             self._set_response(400)
             self.wfile.write(b"Invalid JSON")
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
 
 
 async def run(
