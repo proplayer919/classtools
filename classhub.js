@@ -400,6 +400,62 @@
     consoleOutput.scrollTop = consoleOutput.scrollHeight;
   }, 50);
 
+  // --- Chat Functionality ---
+  let chatAPI = 'https://classtools.proplayer919.dev/';
+
+  // Make a request to the server every second
+  setInterval(() => {
+    fetch(chatAPI + "messages", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((messages) => {
+        chatMessages.innerHTML = "";
+        messages.forEach((message) => {
+          const messageElem = document.createElement("div");
+          if (message.system) {
+            messageElem.style.color = "red";
+          }
+          messageElem.innerHTML =
+            "<strong>" + message.username + ":</strong> " + message.message;
+          chatMessages.appendChild(messageElem);
+        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      })
+      .catch((error) => {
+        const errorMsg = document.createElement("div");
+        errorMsg.style.color = "red";
+        errorMsg.innerText = "Error fetching chat history: " + error;
+        chatMessages.appendChild(errorMsg);
+      });
+  }, 1000);
+
+  // Send message on button click or Enter key in messageInput
+  function sendChatMessage() {
+    const username = usernameInput.value.trim() || "Anonymous";
+    const message = messageInput.value.trim();
+    if (message === "") return;
+    const payload = JSON.stringify({ username, message });
+    fetch(chatAPI, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: payload,
+    })
+    messageInput.value = "";
+  }
+  sendButton.addEventListener("click", sendChatMessage);
+  messageInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      sendChatMessage();
+    }
+  });
+
+
   function consolePrint(text) {
     const msgElem = document.createElement("div");
     msgElem.textContent = text;
@@ -909,61 +965,3 @@
     document.title = "Nice try!";
   }
 })();
-
-// --- Websocket Chat Functionality ---
-let chatSocket = new WebSocket("ws://classtools.proplayer919.dev:8080");
-
-// When the websocket opens, show a connection message
-chatSocket.onopen = function () {
-  const statusMsg = document.createElement("div");
-  statusMsg.style.color = "green";
-  statusMsg.innerText = "Connected to chat server.";
-  chatMessages.appendChild(statusMsg);
-};
-
-// Handle incoming messages and append to chatMessages
-chatSocket.onmessage = function (event) {
-  try {
-    const data = JSON.parse(event.data);
-
-    const messageElem = document.createElement("div");
-    if (data.system) {
-      messageElem.style.color = "red";
-      if (data.message === "Chat history cleared.") {
-        chatMessages.innerHTML = "";
-      }
-    }
-    messageElem.innerHTML =
-      "<strong>" + data.username + ":</strong> " + data.message;
-    chatMessages.appendChild(messageElem);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  } catch (e) {
-    console.error("Error parsing message:", e);
-  }
-};
-
-// Show error if connection fails
-chatSocket.onerror = function (error) {
-  const errorMsg = document.createElement("div");
-  errorMsg.style.color = "red";
-  errorMsg.innerText = "WebSocket error: " + error;
-  chatMessages.appendChild(errorMsg);
-};
-
-// Send message on button click or Enter key in messageInput
-function sendChatMessage() {
-  const username = usernameInput.value.trim() || "Anonymous";
-  const message = messageInput.value.trim();
-  if (message === "") return;
-  const payload = JSON.stringify({ username, message });
-  if (chatSocket.readyState === WebSocket.OPEN) {
-    chatSocket.send(payload);
-  }
-  messageInput.value = "";
-}
-sendButton.addEventListener("click", sendChatMessage);
-messageInput.addEventListener("keypress", function (e) {
-  if (e.key === "Enter") {
-    sendChatMessage();
-  }
-});
