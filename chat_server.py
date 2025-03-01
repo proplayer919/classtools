@@ -1,8 +1,11 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import asyncio
+import time
+import hashlib
 
 message_history = []  # List to store JSON messages
+online_users = {}
 
 
 async def clear_history_periodically():
@@ -15,6 +18,18 @@ async def clear_history_periodically():
         print("Chat history cleared.")
 
 
+def generate_fingerprint(client_ip, headers):
+    """Generate a simple fingerprint using IP, User-Agent, and Accept-Language."""
+    user_agent = headers.get("User-Agent", "")
+    accept_language = headers.get("Accept-Language", "")
+
+    # Concatenate device attributes
+    fingerprint_data = f"{client_ip}|{user_agent}|{accept_language}"
+
+    # Hash it for uniqueness
+    return hashlib.sha256(fingerprint_data.encode()).hexdigest()
+
+
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def _set_response(self, status_code=200):
@@ -25,8 +40,29 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/messages":
+            fingerprint = generate_fingerprint(self.client_address[0], self.headers)
+            online_users[fingerprint] = {
+                "time": time.time(),
+                "ip": self.client_address[0],
+            }
+
             self._set_response()
             self.wfile.write(json.dumps(message_history).encode("utf-8"))
+
+        elif self.path == "/online":
+            current_time = time.time()
+            # Remove users who haven't sent a request in the last 60 seconds
+            active_users = {
+                fp: user
+                for fp, user in online_users.items()
+                if current_time - user["time"] < 60
+            }
+            online_users.clear()
+            online_users.update(active_users)
+
+            self._set_response()
+            self.wfile.write(json.dumps(list(online_users.keys())).encode("utf-8"))
+
         else:
             self._set_response(404)
             self.wfile.write(b"Not Found")
@@ -38,8 +74,21 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             data = json.loads(post_data)
             username = data.get("username", "Anonymous")
             chat_message = data.get("message", "")
-            message_data = json.dumps({"username": username, "message": chat_message})
+
+            # Generate a device fingerprint
+            fingerprint = generate_fingerprint(self.client_address[0], self.headers)
+            online_users[fingerprint] = {
+                "time": time.time(),
+                "ip": self.client_address[0],
+            }
+
+            message_data = {
+                "username": username,
+                "message": chat_message,
+                "fingerprint": fingerprint,
+            }
             message_history.append(message_data)
+
             self._set_response()
             self.wfile.write(b"Message received")
         except json.JSONDecodeError:
@@ -50,7 +99,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header(
+            "Access-Control-Allow-Headers", "Content-Type, User-Agent, Accept-Language"
+        )
         self.end_headers()
 
 

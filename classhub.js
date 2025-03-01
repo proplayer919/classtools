@@ -278,6 +278,14 @@
   tabChat.classList.add("tab-pane");
   tabChat.style.padding = "8px";
 
+  // Online user count
+  const onlineUserCount = document.createElement("div");
+  onlineUserCount.style.backgroundColor = "var(--content-bg)";
+  onlineUserCount.style.border = "1px solid var(--border-color)";
+  onlineUserCount.style.padding = "4px";
+  onlineUserCount.style.marginBottom = "8px";
+  tabChat.appendChild(onlineUserCount);
+
   // Chat messages container
   const chatMessages = document.createElement("div");
   chatMessages.style.height = "350px";
@@ -423,6 +431,18 @@
         errorMsg.innerText = "Error fetching chat history: " + error;
         chatMessages.appendChild(errorMsg);
       });
+    
+    // Check how many people are online
+    fetch(chatAPI + "online", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      response.json().then((data) => {
+        onlineUserCount.innerText = data.online + " users online";
+      });
+    })
   }, 1000);
 
   // Send message on button click or Enter key in messageInput
