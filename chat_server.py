@@ -50,8 +50,8 @@ async def clear_history_periodically():
         print("Chat history cleared.")
 
 async def main():
-    server = await websockets.serve(handler, "0.0.0.0", 8765)
-    print("Chat server started on ws://localhost:8765")
+    server = await websockets.serve(handler, "0.0.0.0", 8080)
+    print("Chat server started on ws://localhost:8080")
     # Run the history clearing routine concurrently with the server
     asyncio.create_task(clear_history_periodically())
     await server.wait_closed()

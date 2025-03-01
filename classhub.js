@@ -911,7 +911,7 @@
 })();
 
 // --- Websocket Chat Functionality ---
-let chatSocket = new WebSocket("ws://classtools.proplayer919.dev:8765");
+let chatSocket = new WebSocket("ws://classtools.proplayer919.dev:8080");
 
 // When the websocket opens, show a connection message
 chatSocket.onopen = function () {
