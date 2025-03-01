@@ -409,7 +409,7 @@
   let cachedMessages = [];
 
   // Make a request to the server every second
-  setInterval(() => {
+  const intervalId = setInterval(() => {
     fetch(chatAPI + "messages", {
       method: "GET",
       headers: {
@@ -966,6 +966,8 @@
     header.removeEventListener("keydown", onHeaderKeyDown);
     consoleInput.removeEventListener("keydown", onConsoleInputKeyDown);
     consoleWindow.remove();
+
+    clearInterval(intervalId);
   }
   closeButton.addEventListener("click", cleanup);
 
