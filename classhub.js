@@ -417,6 +417,7 @@
         messages.forEach((message) => {
           message = JSON.parse(message)
           const messageElem = document.createElement("div");
+          messageElem.style.color = currentTheme.buttonText;
           messageElem.innerHTML =
             "<strong>" + message.username + ":</strong> " + message.message;
           chatMessages.appendChild(messageElem);
