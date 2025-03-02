@@ -38,10 +38,15 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
+        
+    def _set_response_html(self, status_code=200):
+        self.send_response(status_code)
+        self.send_header("Content-type", "text/html")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
 
     def do_GET(self):
         global online_users
-        print(online_users)
       
         if self.path == "/messages":
             fingerprint = generate_fingerprint(self.client_address[0], self.headers)
@@ -73,7 +78,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
             self._set_response()
             self.wfile.write(json.dumps({"online": len(online_users)}).encode("utf-8"))
-
+        elif self.path == "/debug/fp":
+            fingerprint = generate_fingerprint(self.client_address[0], self.headers)
+            self._set_response_html()
+            self.wfile.write(f"<pre>Your fingerprint: {fingerprint}</pre><pre>Online users: {online_users}</pre>".encode("utf-8"))
         else:
             self._set_response(404)
             self.wfile.write(b"Not Found")
