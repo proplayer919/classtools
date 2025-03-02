@@ -233,7 +233,7 @@
   tabBar.classList.add("tab-bar");
   tabBar.setAttribute("role", "tablist");
 
-  const tabs = ["Console", "Plugins", "Chat", "Settings"];
+  const tabs = ["Console", "Plugins", "Chat", "Settings", "Changelog"];
   const tabButtons = {};
   tabs.forEach((tabName) => {
     const btn = document.createElement("button");
@@ -364,11 +364,23 @@
   tabSettings.appendChild(settingInputLabel);
   tabSettings.appendChild(infoText);
 
+  // --- Tab: Changelog ---
+  const tabChangelog = document.createElement("div");
+  tabChangelog.id = "tabChangelog";
+  tabChangelog.classList.add("tab-pane");
+  tabChangelog.style.padding = "16px";
+
+  const changelogContainer = document.createElement("div");
+  tabChangelog.appendChild(changelogContainer);
+
+
+
   // --- Assemble Tabs ---
   tabContentContainer.appendChild(tabConsole);
   tabContentContainer.appendChild(tabPlugins);
   tabContentContainer.appendChild(tabChat);
   tabContentContainer.appendChild(tabSettings);
+  tabContentContainer.appendChild(tabChangelog);
 
   consoleContainer.appendChild(tabBar);
   consoleContainer.appendChild(tabContentContainer);
@@ -379,13 +391,14 @@
 
   // --- Tab Switching ---
   function switchTab(tabName) {
-    [tabConsole, tabChat, tabPlugins, tabSettings].forEach((tab) =>
+    [tabConsole, tabChat, tabPlugins, tabSettings, tabChangelog].forEach((tab) =>
       tab.classList.remove("active")
     );
     if (tabName === "console") tabConsole.classList.add("active");
     else if (tabName === "chat") tabChat.classList.add("active");
     else if (tabName === "plugins") tabPlugins.classList.add("active");
     else if (tabName === "settings") tabSettings.classList.add("active");
+    else if (tabName === "changelog") tabChangelog.classList.add("active");
 
     Object.keys(tabButtons).forEach((key) => {
       if (key === tabName) {
@@ -487,6 +500,47 @@
       sendChatMessage();
     }
   });
+
+  // Fetch the changelog (github commit history)
+  let data = [];
+  let page = 1;
+  async function fetchCommits() {
+    const response = await fetch(`https://api.github.com/repos/proplayer919/classtools/commits?page=${page}`);
+    const commits = await response.json();
+    data.push(...commits);
+    if (commits.length === 30) {
+      page++;
+      await fetchCommits();
+    }
+  }
+  fetchCommits()
+    .then(() => {
+      data.forEach(commit => {
+        let author = commit.commit.author.name;
+        let message = commit.commit.message;
+        let link = commit.html_url;
+        let date = new Date(commit.commit.author.date);
+        let formattedDate = date.toLocaleString();
+        let commitElem = document.createElement("div");
+        commitElem.style.color = currentTheme.buttonText;
+        commitElem.style.backgroundColor = currentTheme.contentBg;
+        commitElem.style.marginBottom = "4px";
+        commitElem.style.padding = "8px";
+
+        commitElem.innerHTML = `
+          <a href="${link}" target="_blank" rel="noopener noreferrer" style="color: ${currentTheme.buttonText}; text-decoration: none;">
+            <strong>${author}</strong> - ${message} - ${formattedDate}
+          </a>
+        `;
+
+        changelogContainer.appendChild(commitElem);
+      });
+
+      changelogContainer.scrollTop = changelogContainer.scrollHeight;
+    })
+    .catch((error) => {
+      console.error("Error fetching changelog:", error);
+    });
 
 
   function consolePrint(text) {
