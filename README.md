@@ -43,4 +43,3 @@ Are you sick of working stuff out yourself? Well, we've decided to work out how 
 - 🔠 Transum Autocomplete
 - 🌐 Extension Hub
 - 🔗 URL Compressor
-- 
