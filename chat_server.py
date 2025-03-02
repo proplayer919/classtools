@@ -93,7 +93,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header(
-            "Access-Control-Allow-Headers", "Content-Type, User-Agent, Accept-Language"
+            "Access-Control-Allow-Headers", "Content-Type, User-Agent, Accept-Language", "X-Fingerprint"
         )
         self.end_headers()
 
