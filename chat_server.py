@@ -50,10 +50,11 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
       
         if self.path == "/messages":
             fingerprint = generate_fingerprint(self.client_address[0], self.headers)
-            online_users[fingerprint] = {
-                "time": time.time(),
-                "ip": self.client_address[0],
-            }
+            if "X-Fingerprint" in self.headers:
+                online_users[fingerprint] = {
+                    "time": time.time(),
+                    "ip": self.client_address[0],
+                }
 
             self._set_response()
             self.wfile.write(json.dumps(message_history).encode("utf-8"))
