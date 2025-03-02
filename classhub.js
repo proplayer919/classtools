@@ -1065,7 +1065,7 @@
     document.title = "Nice try!";
   }
 
-  const agreeMessage = 'DISCLAIMER: Use of this software is up to your decisions, we are not responsible to any actions taken against you for use of this software.';
+  const agreeMessage = 'DISCLAIMER: Use of this software is your own liability, we are not responsible for any actions taken against you for use of this software.';
   const agree = confirm(agreeMessage);
   if (!agree) {
     document.body.innerHTML =
