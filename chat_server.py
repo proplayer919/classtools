@@ -41,6 +41,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         global online_users
+        print(online_users)
       
         if self.path == "/messages":
             fingerprint = generate_fingerprint(self.client_address[0], self.headers)
@@ -69,8 +70,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 for fp, user in online_users.items()
                 if fp not in online_users.values()
             }
-            
-            print(online_users)
 
             self._set_response()
             self.wfile.write(json.dumps({"online": len(online_users)}).encode("utf-8"))
