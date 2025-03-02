@@ -17,12 +17,19 @@ def send_to_discord(message_data):
     """
     Sends a message to a Discord webhook as an embed.
     """
-    embed = {
-        "title": message_data.get("username", "Anonymous"),
-        "description": message_data.get("message", ""),
-        "color": 5814783,  # You can change the color as needed
-        "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
-    }
+    if message_data.get("message", "").startswith("::banner{") and message_data.get("message", "").endswith("}"):
+        embed = {
+            "description": message_data.get("message", "").replace("::banner{", "").replace("}", ""),
+            "color": 5814783,  # You can change the color as needed
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+        }
+    else:
+        embed = {
+            "title": message_data.get("username", "Anonymous"),
+            "description": message_data.get("message", ""),
+            "color": 5814783,  # You can change the color as needed
+            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+        }
     payload = {"embeds": [embed]}
     try:
         response = requests.post(DISCORD_WEBHOOK_URL, json=payload)
