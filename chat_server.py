@@ -50,7 +50,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
       
         if self.path == "/messages":
             fingerprint = generate_fingerprint(self.client_address[0], self.headers)
-            if "X-Fingerprint" in self.headers:
+            if "X-Fingerprint" in self.headers and (not self.client_address[0].startswith("10.244")):
                 online_users[fingerprint] = {
                     "time": time.time(),
                     "ip": self.client_address[0],
