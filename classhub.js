@@ -1057,6 +1057,7 @@
   const blacklistedSites = [
     "essentialassessment.com.au",
     "www.essentialassessment.com.au",
+    // add pat maths
   ];
   const currentSite = window.location.hostname;
   if (blacklistedSites.includes(currentSite)) {
