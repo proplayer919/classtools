@@ -95,6 +95,10 @@
     button:hover {
       background-color: var(--button-hover-bg);
     }
+    a {
+      color: var(--button-text);
+      text-decoration: underline;
+    }
     .console-container {
       height: 500px;
       border: 1px solid var(--border-color);
@@ -354,8 +358,8 @@
   settingInputLabel.appendChild(settingInput);
 
   const infoText = document.createElement("p");
-  infoText.innerText =
-    "Copyright (c) proplayer919 2025. All rights reserved. Version " + version + ".";
+  infoText.innerHTML =
+    "Copyright (c) proplayer919 2025. All rights reserved. Version " + version + ". Discord Link: <a href=\"https://discord.gg/kNfsJZSReg\" target=\"_blank\">https://discord.gg/kNfsJZSReg</a>";
   infoText.style.marginTop = "24px";
   infoText.style.fontSize = "0.8em";
   infoText.style.color = "gray";
@@ -1059,5 +1063,13 @@
     document.body.innerHTML =
       "<h1 style='text-align:center; font-size:3em; margin-top:20%;'>Nice try!</h1>";
     document.title = "Nice try!";
+  }
+
+  const agreeMessage = 'USE OF THIS SOFTWARE IS UP TO YOUR DECISIONS, WE ARE NOT RESPONSIBLE TO ANY ACTIONS TAKEN AGAINST YOU FOR USE OF THIS SOFTWARE';
+  const agree = confirm(agreeMessage);
+  if (!agree) {
+    document.body.innerHTML =
+      "<h1 style='text-align:center; font-size:3em; margin-top:20%;'>Access Blocked</h1>";
+    document.title = "Access Blocked";
   }
 })();
