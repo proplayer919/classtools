@@ -22,9 +22,10 @@ def generate_fingerprint(client_ip, headers):
     """Generate a simple fingerprint using IP, User-Agent, and Accept-Language."""
     user_agent = headers.get("User-Agent", "")
     accept_language = headers.get("Accept-Language", "")
+    supplied_fingerprint = headers.get("X-Fingerprint", "")
 
     # Concatenate device attributes
-    fingerprint_data = f"{client_ip}|{user_agent}|{accept_language}"
+    fingerprint_data = f"{client_ip}|{user_agent}|{accept_language}|{supplied_fingerprint}"
 
     # Hash it for uniqueness
     return hashlib.sha256(fingerprint_data.encode()).hexdigest()
@@ -75,17 +76,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             username = data.get("username", "Anonymous")
             chat_message = data.get("message", "")
 
-            # Generate a device fingerprint
-            fingerprint = generate_fingerprint(self.client_address[0], self.headers)
-            online_users[fingerprint] = {
-                "time": time.time(),
-                "ip": self.client_address[0],
-            }
-
             message_data = {
                 "username": username,
                 "message": chat_message,
-                "fingerprint": fingerprint,
             }
             message_history.append(message_data)
 

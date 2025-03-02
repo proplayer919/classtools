@@ -407,6 +407,7 @@
   // --- Chat Functionality ---
   let chatAPI = 'https://classtools.proplayer919.dev/';
   let cachedMessages = [];
+  let fingerprint = navigator.userAgent + screen.width + screen.height + screen.colorDepth;
 
   // Make a request to the server every second
   const intervalId = setInterval(() => {
@@ -414,6 +415,7 @@
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "X-Fingerprint": fingerprint
       },
     })
       .then((response) => response.json())
