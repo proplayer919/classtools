@@ -60,6 +60,15 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             }
             online_users.clear()
             online_users.update(active_users)
+            
+            # Remove duplicates
+            online_users = {
+                fp: user
+                for fp, user in online_users.items()
+                if fp not in online_users.values()
+            }
+            
+            print(online_users)
 
             self._set_response()
             self.wfile.write(json.dumps({"online": len(online_users)}).encode("utf-8"))
