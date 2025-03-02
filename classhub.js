@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const version = "1.3";
+  const version = "1.3.1";
 
   // --- Theme Management & CSS Setup ---
   const themeColors = {
@@ -520,7 +520,24 @@
         let message = commit.commit.message;
         let link = commit.html_url;
         let date = new Date(commit.commit.author.date);
-        let formattedDate = date.toLocaleString();
+        let locale = navigator.language || 'en-AU';
+
+        // Extract date components manually for full control
+        let day = date.getDate().toString().padStart(2, '0');
+        let month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+        let year = date.getFullYear();
+
+        let hours = date.getHours();
+        let minutes = date.getMinutes().toString().padStart(2, '0');
+        let seconds = date.getSeconds().toString().padStart(2, '0');
+
+        // Convert 24-hour time to 12-hour format
+        let period = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12; // Converts 0 to 12 for midnight
+
+        // Force dd/mm/yyyy hh:mm:ss AM/PM format for Australian users
+        let formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${period}`;
+
         let commitElem = document.createElement("div");
         commitElem.style.color = currentTheme.buttonText;
         commitElem.style.backgroundColor = currentTheme.contentBg;
@@ -528,9 +545,9 @@
         commitElem.style.padding = "8px";
 
         commitElem.innerHTML = `
-          <a href="${link}" target="_blank" rel="noopener noreferrer" style="color: ${currentTheme.buttonText}; text-decoration: none;">
-            <strong>${author}</strong> - ${message} - ${formattedDate}
-          </a>
+        <a href="${link}" target="_blank" rel="noopener noreferrer" style="color: ${currentTheme.buttonText}; text-decoration: none;">
+          <strong>${author}</strong> - ${message} - ${formattedDate}
+        </a>
         `;
 
         changelogContainer.appendChild(commitElem);
