@@ -40,6 +40,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        global online_users
+      
         if self.path == "/messages":
             fingerprint = generate_fingerprint(self.client_address[0], self.headers)
             online_users[fingerprint] = {
