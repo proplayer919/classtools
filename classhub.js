@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const version = "1.3.1";
+  const version = "1.3.2";
 
   // --- Theme Management & CSS Setup ---
   const themeColors = {
