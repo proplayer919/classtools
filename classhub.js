@@ -1059,7 +1059,7 @@
     "www.essentialassessment.com.au",
     "acer.edu.au",
     "www.acer.edu.au"
-    ];
+  ];
   const currentSite = window.location.hostname;
   if (blacklistedSites.includes(currentSite)) {
     document.body.innerHTML =
