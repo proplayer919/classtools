@@ -1057,8 +1057,9 @@
   const blacklistedSites = [
     "essentialassessment.com.au",
     "www.essentialassessment.com.au",
-    // add pat maths
-  ];
+    "acer.edu.au",
+    "www.acer.edu.au"
+    ];
   const currentSite = window.location.hostname;
   if (blacklistedSites.includes(currentSite)) {
     document.body.innerHTML =
