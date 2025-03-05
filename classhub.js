@@ -1057,6 +1057,10 @@
   const blacklistedSites = [
     "essentialassessment.com.au",
     "www.essentialassessment.com.au",
+    "acer.edu.au",
+    "www.acer.edu.au",
+    "alo.acadiencelearning.org",
+    "www.alo.acadiencelearning.org"
   ];
   const currentSite = window.location.hostname;
   if (blacklistedSites.includes(currentSite)) {
