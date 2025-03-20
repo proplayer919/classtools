@@ -237,7 +237,7 @@
   tabBar.classList.add("tab-bar");
   tabBar.setAttribute("role", "tablist");
 
-  const tabs = ["Console", "Plugins", "Chat", "Settings", "Changelog"];
+  const tabs = ["Console", "Plugins", "Settings", "Changelog"];
   const tabButtons = {};
   tabs.forEach((tabName) => {
     const btn = document.createElement("button");
@@ -284,56 +284,6 @@
   pluginLinksContainer.style.flexWrap = "wrap";
   pluginLinksContainer.style.gap = "8px";
   tabPlugins.appendChild(pluginLinksContainer);
-
-  // --- Tab: Chat ---
-  const tabChat = document.createElement("div");
-  tabChat.id = "tabChat";
-  tabChat.classList.add("tab-pane");
-  tabChat.style.padding = "8px";
-
-  // Online user count
-  const onlineUserCount = document.createElement("div");
-  onlineUserCount.style.backgroundColor = "var(--content-bg)";
-  onlineUserCount.style.color = "var(--button-text)";
-  onlineUserCount.style.border = "1px solid var(--border-color)";
-  onlineUserCount.style.padding = "4px";
-  onlineUserCount.style.marginBottom = "8px";
-  tabChat.appendChild(onlineUserCount);
-
-  // Chat messages container
-  const chatMessages = document.createElement("div");
-  chatMessages.style.height = "350px";
-  chatMessages.style.overflowY = "auto";
-  chatMessages.style.backgroundColor = "var(--content-bg)";
-  chatMessages.style.border = "1px solid var(--border-color)";
-  chatMessages.style.padding = "4px";
-  chatMessages.style.marginBottom = "8px";
-  tabChat.appendChild(chatMessages);
-
-  // Username and message input container
-  const chatForm = document.createElement("div");
-  chatForm.style.display = "flex";
-  chatForm.style.gap = "4px";
-
-  // Username input
-  const usernameInput = document.createElement("input");
-  usernameInput.type = "text";
-  usernameInput.placeholder = "Username";
-  usernameInput.style.flex = "1";
-
-  // Message input
-  const messageInput = document.createElement("input");
-  messageInput.type = "text";
-  messageInput.placeholder = "Type your message...";
-  messageInput.style.flex = "3";
-
-  // Send button
-  const sendButton = document.createElement("button");
-  sendButton.innerText = "Send";
-  chatForm.appendChild(usernameInput);
-  chatForm.appendChild(messageInput);
-  chatForm.appendChild(sendButton);
-  tabChat.appendChild(chatForm);
 
   // --- Tab: Settings ---
   const tabSettings = document.createElement("div");
@@ -382,7 +332,6 @@
   // --- Assemble Tabs ---
   tabContentContainer.appendChild(tabConsole);
   tabContentContainer.appendChild(tabPlugins);
-  tabContentContainer.appendChild(tabChat);
   tabContentContainer.appendChild(tabSettings);
   tabContentContainer.appendChild(tabChangelog);
 
@@ -395,11 +344,10 @@
 
   // --- Tab Switching ---
   function switchTab(tabName) {
-    [tabConsole, tabChat, tabPlugins, tabSettings, tabChangelog].forEach((tab) =>
+    [tabConsole, tabPlugins, tabSettings, tabChangelog].forEach((tab) =>
       tab.classList.remove("active")
     );
     if (tabName === "console") tabConsole.classList.add("active");
-    else if (tabName === "chat") tabChat.classList.add("active");
     else if (tabName === "plugins") tabPlugins.classList.add("active");
     else if (tabName === "settings") tabSettings.classList.add("active");
     else if (tabName === "changelog") tabChangelog.classList.add("active");
@@ -415,95 +363,6 @@
     });
   }
   switchTab("console");
-
-  // --- Debounced Auto-Scroll ---
-  const debouncedScroll = debounce(() => {
-    consoleOutput.scrollTop = consoleOutput.scrollHeight;
-  }, 50);
-
-  // --- Chat Functionality ---
-  let chatAPI = 'https://classtools.proplayer919.dev/';
-  let cachedMessages = [];
-  let fingerprint = navigator.userAgent + screen.width + screen.height + screen.colorDepth;
-
-  // Make a request to the server every second
-  const intervalId = setInterval(() => {
-    fetch(chatAPI + "messages", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Fingerprint": fingerprint
-      },
-    })
-      .then((response) => response.json())
-      .then((messages) => {
-        chatMessages.innerHTML = "";
-        if (messages === cachedMessages) return;
-        messages.forEach((message) => {
-          const messageElem = document.createElement("div");
-          messageElem.style.color = currentTheme.buttonText;
-          const messageText = message.message;
-          if (messageText.startsWith("::banner{") && messageText.endsWith("}")) {
-            const bannerText = messageText.slice(9, -1);
-            const bannerElem = document.createElement("div");
-            bannerElem.style.background = currentTheme.buttonHoverBg;
-            bannerElem.style.padding = "8px";
-            bannerElem.style.borderRadius = "8px";
-            bannerElem.style.margin = "8px 0";
-            bannerElem.innerText = bannerText;
-            messageElem.appendChild(bannerElem);
-          } else {
-            const usernameElem = document.createElement("strong");
-            usernameElem.innerText = message.username + ": ";
-            messageElem.appendChild(usernameElem);
-            messageElem.appendChild(document.createTextNode(messageText));
-          }
-          chatMessages.appendChild(messageElem);
-        });
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        cachedMessages = messages;
-      })
-      .catch((error) => {
-        const errorMsg = document.createElement("div");
-        errorMsg.style.color = "red";
-        errorMsg.innerText = "Error fetching chat history: " + error;
-        chatMessages.appendChild(errorMsg);
-      });
-
-    // Check how many people are online
-    fetch(chatAPI + "online", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((response) => {
-      response.json().then((data) => {
-        onlineUserCount.innerText = data.online + " users online";
-      });
-    })
-  }, 1000);
-
-  // Send message on button click or Enter key in messageInput
-  function sendChatMessage() {
-    const username = usernameInput.value.trim() || "Anonymous";
-    const message = messageInput.value.trim();
-    if (message === "") return;
-    const payload = JSON.stringify({ username, message });
-    fetch(chatAPI, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: payload,
-    })
-    messageInput.value = "";
-  }
-  sendButton.addEventListener("click", sendChatMessage);
-  messageInput.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      sendChatMessage();
-    }
-  });
 
   // Fetch the changelog (github commit history)
   let data = [];
@@ -524,7 +383,6 @@
         let message = commit.commit.message;
         let link = commit.html_url;
         let date = new Date(commit.commit.author.date);
-        let locale = navigator.language || 'en-AU';
 
         // Extract date components manually for full control
         let day = date.getDate().toString().padStart(2, '0');
