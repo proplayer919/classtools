@@ -3,7 +3,7 @@ Are you sick of working stuff out yourself? Well, we've decided to work out how 
 
 ## Features 🔥
 - 🧮 Calculator (ClassScript)
-- 💬 Chatroom (yes, you read that right)
+- 💬 ~~Chatroom (yes, you read that right)~~ Chatroom is now discontinued
 - 🔌 Cool and useful plugins (See plugins)
 - 🛠️ And more!
 
